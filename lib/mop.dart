@@ -993,7 +993,10 @@ class Mop {
       final handler = _extensionApis[name];
       debugPrint("name:$name,handler:$handler");
       if (handler != null) {
-        return await handler(call.arguments);
+        return await handler(call.arguments).then((e){
+          print("_handlePlatformMethodCall::${name}  ${e}");
+          return e;
+        });
       }
 
       final apiHandler = _appletHandlerApis[name];

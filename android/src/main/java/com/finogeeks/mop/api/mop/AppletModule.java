@@ -3,9 +3,12 @@ package com.finogeeks.mop.api.mop;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.finogeeks.lib.applet.client.FinAppClient;
 import com.finogeeks.lib.applet.client.FinAppInfo;
 import com.finogeeks.lib.applet.interfaces.FinCallback;
+import com.finogeeks.lib.applet.modules.callback.FinSimpleCallback;
 import com.finogeeks.lib.applet.sdk.api.request.IFinAppletRequest;
 import com.finogeeks.mop.api.BaseApi;
 import com.finogeeks.mop.interfaces.ICallback;
@@ -90,7 +93,27 @@ public class AppletModule extends BaseApi {
                             .setProcessMode(processMode)
                             .setTaskMode(taskMode)
                     ,
-                    null
+                    new FinSimpleCallback<>(){
+                        @Override
+                        public void onSuccess(String s) {
+                            Log.wtf("fin 日志 onSuccess",s);
+                            callback.onSuccess(new HashMap());
+                        }
+
+                        @Override
+                        public void onError(int i, @Nullable String s) {
+                            Log.wtf("fin 日志 onError",s+" code:"+i);
+                            callback.onFail(new HashMap(){
+                                {
+                                    put("info", s+" code:"+i);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onProgress(int i, @Nullable String s) {
+                        }
+                    }
             );
 //            FinAppClient.INSTANCE.getAppletApiManager().startApplet(context, apiServer, appId, sequence, startParams,null);
         } else {
@@ -99,7 +122,27 @@ public class AppletModule extends BaseApi {
                             .setStartParams(startParams)
                             .setSequence(sequence)
                             .setProcessMode(processMode),
-                    null
+                    new FinSimpleCallback<>(){
+                        @Override
+                        public void onSuccess(String s) {
+                            Log.wtf("fin 日志 onSuccess",s);
+                            callback.onSuccess(new HashMap());
+                        }
+
+                        @Override
+                        public void onError(int i, @Nullable String s) {
+                            Log.wtf("fin 日志 onError",s+" code:"+i);
+                            callback.onFail(new HashMap(){
+                                {
+                                    put("info", s+" code:"+i);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onProgress(int i, @Nullable String s) {
+                        }
+                    }
             );
         }
 
@@ -138,7 +181,7 @@ public class AppletModule extends BaseApi {
 //            Log.d("MopPlugin", "openApplet:startParams:" + startParams);
 //            FinAppClient.INSTANCE.getAppletApiManager().startApplet(mContext, finAppletStoreConfig, appId, sequence, startParams);
 //        }
-        callback.onSuccess(new HashMap());
+//        callback.onSuccess(new HashMap());
     }
 
     private void startApplet(Map param, ICallback callback) {
@@ -191,11 +234,31 @@ public class AppletModule extends BaseApi {
                         .setOfflineParams(offlineFrameworkZipPath, offlineMiniprogramZipPath)
                         .setProcessMode(processMode)
                         .setTaskMode(taskMode),
-                null);
+                new FinSimpleCallback<>(){
+                    @Override
+                    public void onSuccess(String s) {
+                        Log.wtf("fin 日志 onSuccess",s);
+                        callback.onSuccess(new HashMap());
+                    }
+
+                    @Override
+                    public void onError(int i, @Nullable String s) {
+                        Log.wtf("fin 日志 onError",s+" code:"+i);
+                        callback.onFail(new HashMap(){
+                            {
+                                put("info", s+" code:"+i);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onProgress(int i, @Nullable String s) {
+                    }
+                });
         // 改成通过request来启动小程序
         // FinAppClient.INSTANCE.getAppletApiManager().startApplet(context, IFinAppletRequest.Companion.fromAppId("apiServer", "appId")
         // .setStartParams(params).setOfflinexxxx);
-        callback.onSuccess(new HashMap());
+//        callback.onSuccess(new HashMap());
     }
 
     private void scanOpenApplet(Map param, ICallback callback) {
@@ -215,9 +278,29 @@ public class AppletModule extends BaseApi {
             taskMode = IFinAppletRequest.TaskMode.MULTI;
         }
         FinAppClient.INSTANCE.getAppletApiManager().startApplet(mContext, IFinAppletRequest.Companion.fromDecrypt(info)
-                .setProcessMode(processMode).setTaskMode(taskMode), null);
+                .setProcessMode(processMode).setTaskMode(taskMode), new FinSimpleCallback<>(){
+            @Override
+            public void onSuccess(String s) {
+                Log.wtf("fin 日志 onSuccess",s);
+                callback.onSuccess(new HashMap());
+            }
+
+            @Override
+            public void onError(int i, @Nullable String s) {
+                Log.wtf("fin 日志 onError",s+" code:"+i);
+                callback.onFail(new HashMap(){
+                    {
+                        put("info", s+" code:"+i);
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(int i, @Nullable String s) {
+            }
+        });
 //        FinAppClient.INSTANCE.getAppletApiManager().startApplet(mContext, new StartAppletDecryptRequest(info),null);
-        callback.onSuccess(new HashMap());
+//        callback.onSuccess(new HashMap());
     }
 
     private void qrcodeOpenApplet(Map param, ICallback callback) {
@@ -237,20 +320,25 @@ public class AppletModule extends BaseApi {
             taskMode = IFinAppletRequest.TaskMode.MULTI;
         }
         FinAppClient.INSTANCE.getAppletApiManager().startApplet(mContext, IFinAppletRequest.Companion.fromQrCode(qrcode)
-                .setProcessMode(processMode).setTaskMode(taskMode), new FinCallback<String>() {
+                .setProcessMode(processMode).setTaskMode(taskMode), new FinSimpleCallback<>(){
             @Override
             public void onSuccess(String s) {
+                Log.wtf("fin 日志 onSuccess",s);
                 callback.onSuccess(new HashMap());
             }
 
             @Override
-            public void onError(int i, String s) {
-                callback.onFail(s);
+            public void onError(int i, @Nullable String s) {
+                Log.wtf("fin 日志 onError",s+" code:"+i);
+                callback.onFail(new HashMap(){
+                    {
+                        put("info", s+" code:"+i);
+                    }
+                });
             }
 
             @Override
-            public void onProgress(int i, String s) {
-
+            public void onProgress(int i, @Nullable String s) {
             }
         });
         /*FinAppClient.INSTANCE.getAppletApiManager().startAppletByQrcode(mContext, qrcode, new FinCallback<String>() {
