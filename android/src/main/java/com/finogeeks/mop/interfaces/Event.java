@@ -23,7 +23,7 @@ public final class Event {
     public Map getParam() {
         if (param instanceof Map) {
 
-            return (Map)param;
+            return (Map) param;
         }
         return null;
     }

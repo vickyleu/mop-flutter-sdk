@@ -12,7 +12,7 @@ public class InitUtils {
             return ((Float) obj).floatValue();
         } else if (float.class.isInstance(obj)) {
             return (float) obj;
-        } else  if (obj instanceof Double) {
+        } else if (obj instanceof Double) {
             return ((Double) obj).floatValue();
         } else if (double.class.isInstance(obj)) {
             return (float) obj;

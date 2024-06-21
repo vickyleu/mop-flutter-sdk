@@ -15,7 +15,7 @@ A finclip miniprogram flutter sdk.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '11.0'
 
   s.dependency 'FinApplet' , '2.43.11-fix20240620v01'
   s.dependency 'FinAppletExt' , '2.43.11-fix20240620v01'

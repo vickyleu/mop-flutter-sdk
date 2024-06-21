@@ -44,4 +44,7 @@ abstract class AppletHandler {
 
   ///getMobileNumber
   Future<void> getMobileNumber(Function(dynamic params) param0);
+
+  Future<void> onNavigationBarCloseButtonClicked();
+
 }

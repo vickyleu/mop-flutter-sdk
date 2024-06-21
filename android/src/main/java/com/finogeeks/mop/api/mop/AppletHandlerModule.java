@@ -10,21 +10,20 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.finogeeks.lib.applet.client.FinAppProcessClient;
 import com.finogeeks.lib.applet.client.FinAppClient;
-import com.finogeeks.lib.applet.modules.log.FLog;
 import com.finogeeks.lib.applet.interfaces.FinCallback;
+import com.finogeeks.lib.applet.modules.log.FLog;
 import com.finogeeks.lib.applet.page.view.moremenu.MoreMenuItem;
 import com.finogeeks.lib.applet.page.view.moremenu.MoreMenuType;
 import com.finogeeks.lib.applet.rest.model.GrayAppletVersionConfig;
 import com.finogeeks.lib.applet.sdk.api.IAppletApiManager;
 import com.finogeeks.lib.applet.sdk.api.IAppletHandler;
 import com.finogeeks.mop.api.BaseApi;
+import com.finogeeks.mop.impls.MyUserProfileHandler;
 import com.finogeeks.mop.interfaces.ICallback;
 import com.finogeeks.mop.service.MopPluginService;
 import com.finogeeks.mop.utils.AppletUtils;
 import com.finogeeks.mop.utils.GsonUtil;
-import com.finogeeks.mop.impls.MyUserProfileHandler;
 import com.google.gson.reflect.TypeToken;
 import com.finogeeks.lib.applet.sdk.api.IAppletLifecycleCallback;
 
@@ -326,7 +325,27 @@ public class AppletHandlerModule extends BaseApi {
 
             @Override
             public void onNavigationBarCloseButtonClicked(@NotNull String s) {
+                handler.post(() -> {
+                    channel.invokeMethod("extensionApi:onNavigationBarCloseButtonClicked", null,new MethodChannel.Result() {
+                        @Override
+                        public void success(Object result) {
+                            FLog.d(TAG, "onNavigationBarCloseButtonClicked success");
+                            callback.onSuccess(null);
+                        }
 
+                        @Override
+                        public void error(String errorCode, String errorMessage, Object errorDetails) {
+                            FLog.e(TAG, "onNavigationBarCloseButtonClicked errorCode : " + errorCode + " errorMessage : " + errorMessage);
+                            callback.onFail(errorDetails);
+                        }
+
+                        @Override
+                        public void notImplemented() {
+                            FLog.d(TAG, "onNavigationBarCloseButtonClicked notImplemented");
+                            callback.onFail(new Exception("notImplemented"));
+                        }
+                    });
+                });
             }
 
             @Override

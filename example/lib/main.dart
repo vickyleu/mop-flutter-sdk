@@ -29,17 +29,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> init() async {
 
     //多服务器配置
+    // 88A38AB8DBE635E4FF7C2CF946682AE5756650C2969E14355A958C8EB0F2B0C1
     FinStoreConfig storeConfigA = FinStoreConfig(
-      "22LyZEib0gLTQdU3MUauAfJ/xujwNfM6OvvEqQyH4igA",
-      "703b9026be3d6bc5",
+      "o4BJLnvnRr4SthikdxriQ1Ndzyt2D/N43waFsQjZ172gA4x+JWh7hhNS5aO52BFs",
+      "2fab1239365f0ee2",
       "https://api.finclip.com",
       cryptType: "SM",
-    );
-
-    FinStoreConfig storeConfigB = FinStoreConfig(
-      "22LyZEib0gLTQdU3MUauAfJ/xujwNfM6OvvEqQyH4igA",
-      "703b9026be3d6bc5",
-      "https://finchat-mop-b.finogeeks.club"
     );
     List<FinStoreConfig> storeConfigs = [storeConfigA];
     Config config = Config(storeConfigs);
@@ -169,9 +164,9 @@ class _MyAppState extends State<MyApp> {
                   if (appletId == "5f72e3559a6a7900019b5baa") {
                     style = TranstionStyle.TranstionStylePush;
                   }
-                  RemoteAppletRequest request = RemoteAppletRequest(apiServer: 'https://api.finclip.com', appletId: appletId, transitionStyle: style);
+                  RemoteAppletRequest request = RemoteAppletRequest(apiServer: 'https://api.finclip.com', startParams: {"token":"123"},
+                      appletId: appletId, transitionStyle: style);
                   Mop.instance.startApplet(request);
-
                   // Mop.instance.qrcodeOpenApplet('https://api.finclip.com/api/v1/mop/runtime/applet/-f-MGYzN2Q1YTYzMmI2MWIyZg--');
 
                 }),
@@ -181,9 +176,6 @@ class _MyAppState extends State<MyApp> {
                 _buildAppletItem(appletId, "removeUsedApplet", () {
                   Mop.instance.removeUsedApplet(appletId);
                 }),
-                // _buildAppletItem(appletId, "removeUsedApplet", () {
-                //   Mop.instance.removeUsedApplet(appletId);
-                // }),
               ],
             ),
           )
@@ -202,10 +194,12 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Column(
           children: <Widget>[
-            _buildAppletWidget("5facb3a52dcbff00017469bd", "画图小程序"),
-            _buildAppletWidget("5f72e3559a6a7900019b5baa", "官方小程序"),
-            _buildAppletWidget("5f17f457297b540001e06ebb", "api测试小程序"),
-            _buildAppletWidget("61386f6484dd160001d3e1ab", "测试小程序"),
+            // https://api.finclip.com/api/v2/mop/runtime/applet/organ/-f-MWMzMTFiYTkxMzYyYjBkNQ--
+            // 64620d7cd21d34000194a9d5
+            _buildAppletWidget("64620d7cd21d34000194a9d5", "题库"),
+            // _buildAppletWidget("5f72e3559a6a7900019b5baa", "官方小程序"),
+            // _buildAppletWidget("5f17f457297b540001e06ebb", "api测试小程序"),
+            // _buildAppletWidget("61386f6484dd160001d3e1ab", "测试小程序"),
             
           ],
         ),
@@ -223,7 +217,7 @@ class MyAppletHandler extends AppletHandler {
   @override
   bool customCapsuleMoreButtonClick(String appId) {
     print("customCapsuleMoreButtonClick---");
-    // toAppMessageChannel.invokeMethod("showCustomMoreView", {"appId": appId});
+    toAppMessageChannel.invokeMethod("showCustomMoreView", {"appId": appId});
     return false;
   }
 

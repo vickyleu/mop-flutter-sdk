@@ -12,7 +12,6 @@ import com.finogeeks.lib.applet.anim.SlideFromTopToBottomAnim;
 import com.finogeeks.lib.applet.client.FinAppClient;
 import com.finogeeks.lib.applet.client.FinAppInfo;
 import com.finogeeks.lib.applet.client.FinAppProcessClient;
-import com.finogeeks.lib.applet.db.entity.FinApplet;
 import com.finogeeks.lib.applet.interfaces.FinCallback;
 import com.finogeeks.lib.applet.rest.model.WechatLoginInfo;
 import com.finogeeks.mop.api.BaseApi;
@@ -64,8 +63,8 @@ public class AppletManageModule extends BaseApi {
                         wechatLoginInfo.put("profileUrl", wechatLogin.getProfileUrl());
                         wechatLoginInfo.put("phoneUrl", wechatLogin.getPhoneUrl());
                         wechatLoginInfo.put("paymentUrl", wechatLogin.getPaymentUrl());
-                        res.put("wechatLoginInfo",wechatLoginInfo);
-                    }else{
+                        res.put("wechatLoginInfo", wechatLoginInfo);
+                    } else {
                         res.put("wechatLoginInfo", null);
                     }
                     callback.onSuccess(res);
@@ -106,10 +105,10 @@ public class AppletManageModule extends BaseApi {
             } else {
                 callback.onFail(null);
             }
-        } else if(event.equals("removeAllUsedApplets")){
-            Log.e(TAG,"removeAllUsedApplets");
+        } else if (event.equals("removeAllUsedApplets")) {
+            Log.e(TAG, "removeAllUsedApplets");
             FinAppClient.INSTANCE.getAppletApiManager().removeAllUsedApplets();
-        }else if (event.equals("setActivityTransitionAnim")) {
+        } else if (event.equals("setActivityTransitionAnim")) {
             String anim = (String) param.get("anim");
             Log.d(TAG, "setActivityTransitionAnim:" + anim);
             if ("SlideFromLeftToRightAnim".equals(anim)) {

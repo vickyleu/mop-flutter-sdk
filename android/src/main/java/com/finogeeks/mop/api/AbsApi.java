@@ -21,14 +21,17 @@ public abstract class AbsApi implements IApi {
     public void onActivityResult(int requestCode, int resultCode, Intent data, ICallback callback) {
 
     }
+
     @Override
     public void onNewIntent(Intent intent) {
 
     }
+
     @Override
     public void onResume() {
 
     }
+
     @Override
     public void onPause() {
 

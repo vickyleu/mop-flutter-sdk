@@ -1,6 +1,5 @@
 package com.finogeeks.mop;
 
-import android.app.Activity;
 import android.content.Intent;
 
 import com.finogeeks.mop.constants.Constants;

@@ -1,14 +1,12 @@
 package com.finogeeks.mop.api.mop;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.finogeeks.lib.applet.client.FinAppClient;
 import com.finogeeks.lib.applet.client.FinAppInfo;
 import com.finogeeks.lib.applet.interfaces.FinCallback;
 import com.finogeeks.lib.applet.sdk.api.request.IFinAppletRequest;
-import com.finogeeks.lib.applet.sdk.model.StartAppletDecryptRequest;
 import com.finogeeks.mop.api.BaseApi;
 import com.finogeeks.mop.interfaces.ICallback;
 
@@ -31,7 +29,7 @@ public class AppletModule extends BaseApi {
 
     @Override
     public String[] apis() {
-        return new String[]{"openApplet", "scanOpenApplet","qrcodeOpenApplet", "changeUserId", "startApplet"};
+        return new String[]{"openApplet", "scanOpenApplet", "qrcodeOpenApplet", "changeUserId", "startApplet"};
     }
 
     @Override
@@ -40,8 +38,8 @@ public class AppletModule extends BaseApi {
             openApplet(param, callback);
         } else if ("scanOpenApplet".equals(event)) {
             scanOpenApplet(param, callback);
-        } else if ("qrcodeOpenApplet".equals(event)){
-            qrcodeOpenApplet(param,callback);
+        } else if ("qrcodeOpenApplet".equals(event)) {
+            qrcodeOpenApplet(param, callback);
         } else if ("changeUserId".equals(event)) {
             changeUserId(param, callback);
         } else if ("startApplet".equals(event)) {
@@ -283,7 +281,7 @@ public class AppletModule extends BaseApi {
             FinAppClient.INSTANCE.getFinAppConfig().setUserId(userId);
             callback.onSuccess(new HashMap());
         } else {
-            callback.onFail(new HashMap(){
+            callback.onFail(new HashMap() {
                 {
                     put("info", "sdk not initilized");
                 }

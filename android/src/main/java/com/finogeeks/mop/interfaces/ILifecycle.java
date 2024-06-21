@@ -28,10 +28,12 @@ public interface ILifecycle {
      * 当{@link Activity#onNewIntent(Intent)}方法调用时回调.
      */
     void onNewIntent(Intent intent);
+
     /**
      * 当{@link Activity#onResume()}方法调用时回调.
      */
     void onResume();
+
     /**
      * 当{@link Activity#onResume()}方法调用时回调.
      */

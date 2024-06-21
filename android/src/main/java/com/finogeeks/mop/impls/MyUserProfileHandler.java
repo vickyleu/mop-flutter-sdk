@@ -9,10 +9,10 @@ import com.finogeeks.lib.applet.client.FinAppInfo;
 import com.finogeeks.lib.applet.modules.userprofile.IUserProfileHandler;
 import com.finogeeks.mop.service.MopPluginService;
 
-import java.util.Map;
-
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
+
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodChannel;
 

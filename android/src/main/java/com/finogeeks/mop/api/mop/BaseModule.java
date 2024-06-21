@@ -13,10 +13,8 @@ import com.finogeeks.mop.api.BaseApi;
 import com.finogeeks.mop.api.mop.util.InitUtils;
 import com.finogeeks.mop.interfaces.ICallback;
 import com.finogeeks.mop.service.MopPluginService;
-import com.finogeeks.xlog.XLogLevel;
 import com.google.gson.Gson;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +103,7 @@ public class BaseModule extends BaseApi {
                     Boolean encryptServerData1 = (Boolean) config.get("encryptServerData");
                     Boolean enablePreloadFramework = (Boolean) config.get("enablePreloadFramework");
                     //凡泰助手里，服务器是https://api.finclip.com，默认开启预加载基础库
-                    if(!TextUtils.isEmpty(apiServer) && apiServer.equals("https://api.finclip.com")) {
+                    if (!TextUtils.isEmpty(apiServer) && apiServer.equals("https://api.finclip.com")) {
                         enablePreloadFramework = true;
                     }
 

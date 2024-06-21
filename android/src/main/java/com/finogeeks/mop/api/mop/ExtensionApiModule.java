@@ -33,12 +33,12 @@ public class ExtensionApiModule extends BaseApi {
 
     @Override
     public String[] apis() {
-        return new String[]{"registerExtensionApi","addWebExtentionApi"};
+        return new String[]{"registerExtensionApi", "addWebExtentionApi"};
     }
 
     @Override
     public void invoke(String s, Map param, ICallback iCallback) {
-        if(s.equals("registerExtensionApi")) {
+        if (s.equals("registerExtensionApi")) {
             MethodChannel channel = MopPluginService.getInstance().getMethodChannel();
             String name = (String) param.get("name");
             Log.d(TAG, "registerExtensionApi:" + name);
@@ -95,7 +95,7 @@ public class ExtensionApiModule extends BaseApi {
                     });
                 }
             });
-        }else if(s.equals("addWebExtentionApi")){
+        } else if (s.equals("addWebExtentionApi")) {
             MethodChannel channel = MopPluginService.getInstance().getMethodChannel();
             String name = (String) param.get("name");
             Log.d(TAG, "addWebExtentionApi:" + name);

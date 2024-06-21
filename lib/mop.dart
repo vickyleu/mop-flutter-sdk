@@ -1235,6 +1235,11 @@ class Mop {
       return handler.getMobileNumber((params0) =>
           {_channel.invokeMethod("getPhoneNumberResult", params0)});
     };
+    _appletHandlerApis["onNavigationBarCloseButtonClicked"] = (params) async {
+      print("onNavigationBarCloseButtonClicked 妈的");
+      handler.onNavigationBarCloseButtonClicked();
+    };
+
     _channel.invokeMethod("registerAppletHandler");
   }
 

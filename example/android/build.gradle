@@ -1,21 +1,52 @@
 buildscript {
+//    repositories {
+//        google()
+//        mavenCentral()
+//    }
     repositories {
-        google()
-        mavenCentral()
-    }
+        all { ArtifactRepository repo ->
+            if (repo instanceof MavenArtifactRepository) {
+                def url = repo.url.toString()
+                if (
+                        (url.startsWith('http://repo1.maven.org/maven2')) ||
+                                (url.startsWith('https://repo1.maven.org/maven2')) ||
+                                (url.startsWith('http://jcenter.bintray.com')) ||
+                                (url.startsWith('https://jcenter.bintray.com')) ||
+                                (url.startsWith('http://maven.google.com')) ||
+                                (url.startsWith('https://maven.google.com'))||
+                                (url.startsWith('https://dl.google.com'))
+                ) {
+                    remove repo
+                }
 
+            }
+        }
+        maven {
+            url = uri("https://repo.nju.edu.cn/repository/maven-public/")
+        }
+        maven {
+            url = uri("https://mirrors.cloud.tencent.com/gradle/")
+        }
+        maven {
+            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+        }
+        maven {
+            url = uri("https://maven.aliyun.com/repository/gradle-plugin")
+        }
+    }
+    //kotlin-parcelize
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
+        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+//allprojects {
+//    repositories {
+//        google()
+//        mavenCentral()
+//    }
+//}
 
 rootProject.buildDir = '../build'
 subprojects {
@@ -23,6 +54,6 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-task clean(type: Delete) {
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

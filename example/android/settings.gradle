@@ -1,3 +1,85 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+pluginManagement {
+    repositories {
+        all { ArtifactRepository repo ->
+            if (repo instanceof MavenArtifactRepository) {
+                def url = repo.url.toString()
+                if (
+                        (url.startsWith('http://repo1.maven.org/maven2')) ||
+                                (url.startsWith('https://repo1.maven.org/maven2')) ||
+                                (url.startsWith('http://jcenter.bintray.com')) ||
+                                (url.startsWith('https://jcenter.bintray.com')) ||
+                                (url.startsWith('http://maven.google.com')) ||
+                                (url.startsWith('https://maven.google.com'))||
+                                (url.startsWith('https://dl.google.com'))
+                ) {
+                    remove repo
+                }
+
+            }
+        }
+        maven {
+            url = uri("https://repo.nju.edu.cn/repository/maven-public/")
+        }
+        maven {
+            url = uri("https://mirrors.cloud.tencent.com/gradle/")
+        }
+        maven {
+            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+        }
+        maven {
+            url = uri("https://maven.aliyun.com/repository/gradle-plugin")
+        }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS) //首选设置存储库
+    repositories {
+        all { ArtifactRepository repo ->
+            if (repo instanceof MavenArtifactRepository) {
+                def url = repo.url.toString()
+                if (
+                        (url.startsWith('http://repo1.maven.org/maven2')) ||
+                                (url.startsWith('https://repo1.maven.org/maven2')) ||
+                                (url.startsWith('http://jcenter.bintray.com')) ||
+                                (url.startsWith('https://jcenter.bintray.com')) ||
+                                (url.startsWith('http://maven.google.com')) ||
+                                (url.startsWith('https://maven.google.com'))||
+                                (url.startsWith('https://jitpack.io'))||
+                                (url.startsWith('https://dl.google.com'))
+                ) {
+                    remove repo
+                }
+            }
+        }
+        maven {
+            url = uri("https://repo.nju.edu.cn/repository/maven-public/")
+        }
+        maven {
+            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+        }
+        maven { url "https://mirrors.cloud.tencent.com/flutter/download.flutter.io/"}
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
+            allowInsecureProtocol =true
+        }
+        maven {
+            url "https://gradle.finogeeks.club/repository/finogeeks/"
+            credentials {
+                username "finclip"
+                password "Abcd@@1234"
+            }
+        }
+        maven {
+            url "https://gradle.finogeeks.club/repository/applet/"
+            credentials {
+                username "finclip"
+                password "Abcd@@1234"
+            }
+        }
+    }
+}
+
 include ':app'
 
 def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
@@ -8,4 +90,9 @@ localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
 
 def flutterSdkPath = properties.getProperty("flutter.sdk")
 assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+gradle.beforeProject({ project->  // flutter的bug,如果指定armv7和arm64,armv7不会打包libflutter.so 的动态库,导致在32位手机上会崩溃
+    if(project.hasProperty("target-platform")){
+        project.setProperty("target-platform", "android-arm,android-arm64")//,android-arm64  //flutter打包记得开启,flutter engine 动态构建属性,在纯Android模式下会报错
+    }
+})
 apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"

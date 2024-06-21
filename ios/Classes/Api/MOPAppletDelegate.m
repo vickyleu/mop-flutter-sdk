@@ -141,6 +141,12 @@
     free(properties);
     return dict;
 }
+-(void)appletInfo:(FATAppletInfo *)appletInfo didCloseCompletion:(NSError *)error{
+    FlutterMethodChannel *channel = [[MopPlugin instance] methodChannel];
+    NSLog(@"onNavigationBarCloseButtonClickedWithAppletInfo");
+    [channel invokeMethod:@"extensionApi:onNavigationBarCloseButtonClicked" arguments:nil result:^(id _Nullable result) {
+    }];
+}
 
 - (void)applet:(NSString *)appletId didOpenCompletion:(NSError *)error {
     if (!appletId) {
@@ -185,6 +191,8 @@ static NSString *scheme = @"fatae55433be2f62915";//App对应的scheme
     }];
 
 }
+
+
 
 - (void)chooseAvatarWithAppletInfo:(FATAppletInfo *)appletInfo bindChooseAvatar:(void (^)(NSDictionary *result))bindChooseAvatar {
 
