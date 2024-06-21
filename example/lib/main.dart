@@ -285,4 +285,10 @@ class MyAppletHandler extends AppletHandler {
     throw UnimplementedError();
   }
 
+  @override
+  Future<void> onNavigationBarCloseButtonClicked() {
+    // TODO: implement onNavigationBarCloseButtonClicked
+    throw UnimplementedError();
+  }
+
 }
