@@ -32,8 +32,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
+        classpath 'com.android.tools.build:gradle:8.9.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24"
 
     }
 }
@@ -66,7 +66,7 @@ rootProject.allprojects {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 android {
@@ -84,8 +84,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -102,6 +102,6 @@ dependencies {
     api 'com.finogeeks.lib:finapplet:2.44.9'
     api 'com.finogeeks.mop:plugins:2.44.9'
 
-    compileOnly("io.flutter:flutter_embedding_debug:1.0.0-edd8546116457bdf1c5bdfb13ecb9463d2bb5ed4")
-    testCompileOnly("io.flutter:flutter_embedding_debug:1.0.0-edd8546116457bdf1c5bdfb13ecb9463d2bb5ed4")
+    compileOnly("io.flutter:flutter_embedding_debug:1.0.0-18b71d647a292a980abb405ac7d16fe1f0b20434")
+    testCompileOnly("io.flutter:flutter_embedding_debug:1.0.0-18b71d647a292a980abb405ac7d16fe1f0b20434")
 }

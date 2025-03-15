@@ -17,13 +17,11 @@ import java.util.Map;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * MopPlugin
@@ -44,22 +42,6 @@ public class MopPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
     private EventChannel eventChannel;
     private Lifecycle lifecycle;
 
-    /**
-     * Plugin registration.
-     */
-    @SuppressWarnings("deprecation")
-    public static void registerWith(Registrar registrar) {
-        MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-        MopPluginDelegate delegate = new MopPluginDelegate();
-        final MopPlugin plugin = new MopPlugin();
-        channel.setMethodCallHandler(plugin);
-        registrar.addActivityResultListener(delegate);
-
-        EventChannel eventChannel = new EventChannel(registrar.messenger(), EVENT_CHANNEL);
-        final MopEventStream mopEventStream = new MopEventStream();
-        eventChannel.setStreamHandler(mopEventStream);
-        MopPluginService.getInstance().initialize(registrar.activity(), mopEventStream, channel);
-    }
 
     @Override
     public void onMethodCall(MethodCall call, final Result result) {
@@ -121,7 +103,7 @@ public class MopPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
     @Override
     public void onAttachedToActivity(ActivityPluginBinding binding) {
         binding.addActivityResultListener(delegate);
-        lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
+        lifecycle = (Lifecycle) binding.getLifecycle();
         setServicesFromActivity(binding.getActivity());
         channel.setMethodCallHandler(this);
     }
@@ -134,7 +116,8 @@ public class MopPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
     @Override
     public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
         binding.addActivityResultListener(delegate);
-        lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
+        lifecycle = (Lifecycle) binding.getLifecycle();
+//        lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding);
         setServicesFromActivity(binding.getActivity());
     }
 
