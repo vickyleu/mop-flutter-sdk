@@ -37,6 +37,10 @@
 static MopPlugin *_instance;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+    if (_instance) {
+        return;
+    }
+    
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"mop"
             binaryMessenger:[registrar messenger]];

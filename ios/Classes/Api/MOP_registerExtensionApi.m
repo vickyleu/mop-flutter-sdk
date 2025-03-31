@@ -16,6 +16,8 @@
     NSLog(@"MOP_registerExtensionApi");
     FlutterMethodChannel *channel = [[MopPlugin instance] methodChannel];
     NSString *name = self.name;
+    NSLog(@"registerExtensionApi===>>>%@",name);
+
     [[FATClient sharedClient] registerExtensionApi:name handler:^(FATAppletInfo *appletInfo, id param, FATExtensionApiCallback callback) {
         NSLog(@"channel:%@---invoke ExtensionApi:%@, param:%@", channel, name, param);
         NSString *api = [@"extensionApi:" stringByAppendingString:name];
@@ -24,7 +26,7 @@
             // 先判断是否flutter发生错误
             BOOL isValid = [result isKindOfClass:[NSDictionary class]];
             if (!isValid) {
-                NSLog(@"extensionApi reslut is not NSDictionary");
+                NSLog(@"extensionApi reslut is not NSDictionary %@",result);
                 callback(FATExtensionCodeFailure,nil);
                 return;
             }

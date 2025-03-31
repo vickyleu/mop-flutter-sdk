@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.finogeeks.lib.applet.client.FinAppClient;
 import com.finogeeks.lib.applet.client.FinAppInfo;
 import com.finogeeks.lib.applet.interfaces.FinCallback;
