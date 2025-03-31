@@ -68,6 +68,11 @@ class Config {
   /// 小程序缓存信息会存储在以userId命名的不同目录下。
   String? userId;
 
+  // 渠道标识，如果未设置则取应用bundleId
+  String? channel;
+  // 手机号，也可以是一个token。
+  String? phone;
+
   /// 产品的标识，非必传，默认为存储目录里的finclip，finogeeks和userAgent里的finogeeks
   String? productIdentification;
 
@@ -244,6 +249,8 @@ class Config {
     return {
       "finStoreConfigs": storeConfigs,
       "userId": userId,
+      "channel": channel,
+      "phone": phone,
       "productIdentification": productIdentification,
       "disableRequestPermissions": disableRequestPermissions,
       "appletAutoAuthorize": appletAutoAuthorize,
@@ -449,14 +456,14 @@ class CapsuleConfig {
   /// 上角胶囊视图的高度，默认值为32
   double capsuleHeight = 32;
 
-  /// 右上角胶囊视图的右边距
-  double capsuleRightMargin = 8;
+  /// 右上角胶囊视图的右边距，默认值为7
+  double capsuleRightMargin = 7;
 
-  /// 右上角胶囊视图的圆角半径，默认值为5
-  double capsuleCornerRadius = 5;
+  /// 右上角胶囊视图的圆角半径，默认值为16
+  double capsuleCornerRadius = 16;
 
-  /// 右上角胶囊视图的边框宽度，默认值为1
-  double capsuleBorderWidth = 1;
+  /// 右上角胶囊视图的边框宽度，默认值为0.5
+  double capsuleBorderWidth = 0.5;
 
   // /// 胶囊背景颜色浅色
   // int capsuleBgLightColor = 0x80ffffff;
@@ -464,22 +471,26 @@ class CapsuleConfig {
   // /// 胶囊背景颜色深色
   // int capsuleBgDarkColor = 0x33000000;
 
-  /// 胶囊背景颜色浅色
+  /// 胶囊背景颜色浅色(安卓和iOS在SDK内部语义上是取反的，所以不一致)
   int capsuleBgLightColor = Platform.isAndroid ? 0x33000000 : 0x80ffffff;
 
-  /// 胶囊背景颜色深色
+  /// 胶囊背景颜色深色(安卓和iOS在SDK内部语义上是取反的，所以不一致)
   int capsuleBgDarkColor = Platform.isAndroid ? 0x80ffffff : 0x33000000;
 
   /// 右上角胶囊视图的边框浅色颜色
+  /// 暗黑模式
   int capsuleBorderLightColor = 0x80ffffff;
 
-  ///右上角胶囊视图的边框深色颜色
+  /// 右上角胶囊视图的边框深色颜色
+  /// 明亮模式
   int capsuleBorderDarkColor = 0x26000000;
 
   /// 胶囊分割线浅色颜色
+  /// 暗黑模式
   int capsuleDividerLightColor = 0x80ffffff;
 
   /// 胶囊分割线深色颜色
+  /// 明亮模式
   int capsuleDividerDarkColor = 0x26000000;
 
   /// 胶囊里的浅色更多按钮的图片对象，如果不传，会使用默认图标
@@ -564,8 +575,8 @@ class NavHomeConfig {
   /// 返回首页按钮的圆角半径，默认值为5
   double cornerRadius = 5;
 
-  /// 返回首页按钮的边框宽度，Android默认值为0.75，iOS默认值为0.8
-  double borderWidth = Platform.isAndroid ? 0.75 : 0.8;
+  /// 返回首页按钮的边框宽度，默认值为0.5
+  double borderWidth = 0.5;
 
   /// 返回首页按钮的边框浅色颜色
   /// （暗黑模式）
@@ -843,6 +854,9 @@ class RemoteAppletRequest {
   // 是否以单任务模式运行，仅限android，默认为false
   bool isSingTask;
 
+  // 触发reLaunch的条件模式
+  FCReLaunchMode reLaunchMode;
+
   RemoteAppletRequest({
     required this.apiServer,
     required this.appletId,
@@ -854,6 +868,7 @@ class RemoteAppletRequest {
     this.transitionStyle = TranstionStyle.TranstionStyleUp,
     this.isSingleProcess = false,
     this.isSingTask = false,
+    this.reLaunchMode = FCReLaunchMode.PARAMS_EXIST,
   });
 
   Map<String, dynamic> toMap() {
@@ -864,6 +879,7 @@ class RemoteAppletRequest {
       "isSingleProcess": isSingleProcess,
       "isSingTask": isSingTask,
       "transitionStyle": transitionStyle.index,
+      "reLaunchMode": reLaunchMode.index,
     };
     if (startParams != null) result["startParams"] = startParams;
     if (offlineMiniprogramZipPath != null)
@@ -889,15 +905,19 @@ class QRCodeAppletRequest {
   // 是否以单任务模式运行，仅限android，默认为false
   bool isSingTask;
 
+  // 触发reLaunch的条件模式
+  FCReLaunchMode reLaunchMode;
+
   QRCodeAppletRequest(this.qrCode,
-      {this.isSingleProcess = false, this.isSingTask = false});
+      {this.isSingleProcess = false, this.isSingTask = false, this.reLaunchMode = FCReLaunchMode.PARAMS_EXIST});
 
   Map<String, dynamic> toMap() {
     return {
-      "apiServer": qrCode,
+      "qrcode": qrCode,
       "animated": animated,
       "isSingleProcess": isSingleProcess,
       "isSingTask": isSingTask,
+      "reLaunchMode": reLaunchMode.index,
     };
   }
 }
@@ -941,6 +961,13 @@ enum LogLevel {
   LEVEL_DEBUG, // 设置为该等级，将会记录ERROR、WARING、INFO和DEBUG级别的日志
   LEVEL_VERBOSE, // 设置为该等级，将会记录ERROR、WARING、INFO、DEBUG和VERBOSE级别的日志
   LEVEL_NONE
+}
+
+enum FCReLaunchMode {
+  PARAMS_EXIST,   // 只要有启动参数（path、query），热启动就会执行reLaunch
+  ONLY_PARAMS_DIFF, // 只有启动参数与上一次不同，热启动时才会执行reLaunch
+  ALWAYS,  // 每次热启动均执行reLaunch
+  NEVER     // 永远不执行reLaunch，每次热启动均复用页面栈
 }
 
 class Mop {
@@ -1129,6 +1156,12 @@ class Mop {
     return await _channel.invokeMapMethod("qrcodeOpenApplet", params);
   }
 
+  Future<Map> qrcodeStartApplet(QRCodeAppletRequest qrcodeRequest) async {
+    Map<String, dynamic> params = qrcodeRequest.toMap();
+    final Map ret = await _channel.invokeMethod("qrcodeOpenApplet", params);
+    return ret;
+  }
+
   /// （扫码后）解密-鉴权-打开小程序
   Future scanOpenApplet(String info,
       {bool isSingleProcess = false, bool isSingTask = false}) async {
@@ -1173,7 +1206,7 @@ class Mop {
   }
 
   /// clear applets cache
-  /// 清除缓存的小程序
+  /// 结束所有小程序
   Future clearApplets() async {
     return await _channel.invokeMethod("clearApplets");
   }

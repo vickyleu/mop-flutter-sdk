@@ -1,19 +1,27 @@
 stages:
-  - buildVerify
+  - build
 variables:
   LC_ALL: "en_US.UTF-8"
   LANG: "en_US.UTF-8"
-  GITLAB_FLUTTER_VERSION: $GITLAB_FLUTTER_VERSION
+  GITLAB_VERSION: $GITLAB_VERSION
   GITLAB_IOS_VERSION: $GITLAB_IOS_VERSION
   GITLAB_ANDROID_VERSION: $GITLAB_ANDROID_VERSION
 
+workflow:
+  rules:
+    - if: '$GITLAB_VERSION != null && $GITLAB_VERSION != ""'
+    - when: never
 
-buildVerify:
-  stage: buildVerify
+build:
+  stage: build
   script:
-    # 编译
-    - echo $gitlab_uploadToGit
-    - sh bundle.sh $GITLAB_FLUTTER_VERSION $GITLAB_IOS_VERSION $GITLAB_ANDROID_VERSION
+    - |
+      echo "检查变量值："
+      echo "Version: $GITLAB_VERSION"
+      echo "iOS Version: $GITLAB_IOS_VERSION"
+      echo "Android Version: $GITLAB_ANDROID_VERSION"
+
+      sh bundle.sh $GITLAB_VERSION $GITLAB_IOS_VERSION $GITLAB_ANDROID_VERSION $CI_COMMIT_REF_NAME
   tags:
     - mac-studio
   only:

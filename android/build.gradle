@@ -99,8 +99,8 @@ kapt {
 }
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    api 'com.finogeeks.lib:finapplet:2.44.9'
-    api 'com.finogeeks.mop:plugins:2.44.9'
+    implementation 'com.finogeeks.lib:finapplet:2.47.9'
+    implementation 'com.finogeeks.mop:plugins:2.47.9'
 
     compileOnly("io.flutter:flutter_embedding_debug:1.0.0-18b71d647a292a980abb405ac7d16fe1f0b20434")
     testCompileOnly("io.flutter:flutter_embedding_debug:1.0.0-18b71d647a292a980abb405ac7d16fe1f0b20434")

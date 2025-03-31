@@ -1,10 +1,10 @@
 package com.finogeeks.mop.api.mop;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
+import androidx.annotation.NonNull;
 import com.finogeeks.lib.applet.client.FinAppClient;
 import com.finogeeks.lib.applet.client.FinAppInfo;
 import com.finogeeks.lib.applet.interfaces.FinCallback;
@@ -217,7 +217,7 @@ public class AppletModule extends BaseApi {
         } else {
             taskMode = IFinAppletRequest.TaskMode.MULTI;
         }
-
+        IFinAppletRequest.ReLaunchMode mode = getReLaunchMode(param);
         Log.d("MopPlugin", "startApplet (appId=" + appId + ", sequence=" + sequence + ", apiServer=" + apiServer + ", isSingleProcess:" + isSingleProcess);
         // mContext是FlutterActivity，
         // 在Android 6.0、7.0系统的部分设备中热启动小程序时，如果context参数用mContext，会出现无法启动小程序的问题
@@ -233,7 +233,8 @@ public class AppletModule extends BaseApi {
                         .setStartParams(params)
                         .setOfflineParams(offlineFrameworkZipPath, offlineMiniprogramZipPath)
                         .setProcessMode(processMode)
-                        .setTaskMode(taskMode),
+                        .setTaskMode(taskMode)
+                        .setReLaunchMode(mode),
                 new FinSimpleCallback<>(){
                     @Override
                     public void onSuccess(String s) {
@@ -319,8 +320,9 @@ public class AppletModule extends BaseApi {
         } else {
             taskMode = IFinAppletRequest.TaskMode.MULTI;
         }
+        IFinAppletRequest.ReLaunchMode mode = getReLaunchMode(param);
         FinAppClient.INSTANCE.getAppletApiManager().startApplet(mContext, IFinAppletRequest.Companion.fromQrCode(qrcode)
-                .setProcessMode(processMode).setTaskMode(taskMode), new FinSimpleCallback<>(){
+                .setProcessMode(processMode).setTaskMode(taskMode).setReLaunchMode(mode), new FinSimpleCallback<>(){
             @Override
             public void onSuccess(String s) {
                 Log.wtf("fin 日志 onSuccess",s);
@@ -363,13 +365,32 @@ public class AppletModule extends BaseApi {
         });*/
     }
 
+    @NonNull
+    private static IFinAppletRequest.ReLaunchMode getReLaunchMode(Map param) {
+        IFinAppletRequest.ReLaunchMode mode = IFinAppletRequest.ReLaunchMode.PARAMS_EXIST;
+        Object modeValue = param.get("reLaunchMode");
+        if (modeValue != null) {
+            if (modeValue instanceof Integer) {
+                int reLaunchMode = (Integer) modeValue;
+                if (reLaunchMode == 1) {
+                    mode = IFinAppletRequest.ReLaunchMode.ONLY_PARAMS_DIFF;
+                } else if (reLaunchMode == 2) {
+                    mode = IFinAppletRequest.ReLaunchMode.ALWAYS;
+                } else if (reLaunchMode == 3) {
+                    mode = IFinAppletRequest.ReLaunchMode.NEVER;
+                }
+            }
+        }
+        return mode;
+    }
+
     private void changeUserId(Map param, ICallback callback) {
         String userId = String.valueOf(param.get("userId"));
         if (FinAppClient.INSTANCE.getFinAppConfig() != null) {
             FinAppClient.INSTANCE.getFinAppConfig().setUserId(userId);
             callback.onSuccess(new HashMap());
         } else {
-            callback.onFail(new HashMap() {
+            callback.onFail(new HashMap(){
                 {
                     put("info", "sdk not initilized");
                 }

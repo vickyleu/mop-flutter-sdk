@@ -1,13 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mop/api.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:mop/mop.dart';
+import 'package:mop_example/test_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,24 +20,35 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    init();
+
+    Future.delayed(const Duration(seconds: 3), () {
+         init();
+    });
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> init() async {
 
     //多服务器配置
-    // 88A38AB8DBE635E4FF7C2CF946682AE5756650C2969E14355A958C8EB0F2B0C1
     FinStoreConfig storeConfigA = FinStoreConfig(
-      "o4BJLnvnRr4SthikdxriQ1Ndzyt2D/N43waFsQjZ172gA4x+JWh7hhNS5aO52BFs",
-      "2fab1239365f0ee2",
+      "22LyZEib0gLTQdU3MUauAfJ/xujwNfM6OvvEqQyH4igA",
+      "703b9026be3d6bc5",
       "https://api.finclip.com",
       cryptType: "SM",
+    );
+
+    FinStoreConfig storeConfigB = FinStoreConfig(
+      "22LyZEib0gLTQdU3MUauAfJ/xujwNfM6OvvEqQyH4igA",
+      "703b9026be3d6bc5",
+      "https://finchat-mop-b.finogeeks.club"
     );
     List<FinStoreConfig> storeConfigs = [storeConfigA];
     Config config = Config(storeConfigs);
     config.language = LanguageType.English;
     config.baseLoadingViewClass = "LoadingView";
+    config.userId = "18607180143";
+    config.channel = "finclip";
+    config.phone = "1234567890";
     config.appletDebugMode = BOOLState.BOOLStateTrue;
     
     UIConfig uiconfig = UIConfig();
@@ -138,7 +147,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Widget _buildAppletWidget(String appletId, String appletName) {
+  Widget _buildAppletWidget(String appletId, String appletName, int index, Map<String, String>? startParams) {
     return Container(
       margin: EdgeInsets.only(left: 20, top: 30, right: 20),
       child: Column(
@@ -154,27 +163,43 @@ class _MyAppState extends State<MyApp> {
           Container(
             height: 100,
             child: GridView.count(
-              crossAxisCount: 3,
+              crossAxisCount: 4,
               childAspectRatio: 2,
-              crossAxisSpacing: 30,
+              crossAxisSpacing: 10,
+              physics: ClampingScrollPhysics(), // 关闭弹性效果
               // physics: NeverScrollableScrollPhysics(),
               children: [
-                _buildAppletItem(appletId, "打开小程序", () {
+                _buildAppletItem(appletId, "open", () {
                   TranstionStyle style = TranstionStyle.TranstionStyleUp;
-                  if (appletId == "5f72e3559a6a7900019b5baa") {
+                  FCReLaunchMode mode = FCReLaunchMode.PARAMS_EXIST;
+                  if (index == 1) {
+                    mode = FCReLaunchMode.ONLY_PARAMS_DIFF;
                     style = TranstionStyle.TranstionStylePush;
+                  } else if (index == 2) {
+                    mode = FCReLaunchMode.ALWAYS;
+                  } else if (index == 3) {
+                    mode = FCReLaunchMode.NEVER;
                   }
-                  RemoteAppletRequest request = RemoteAppletRequest(apiServer: 'https://api.finclip.com', startParams: {"token":"123"},
-                      appletId: appletId, transitionStyle: style);
+
+                  RemoteAppletRequest request = RemoteAppletRequest(
+                    apiServer: 'https://api.finclip.com',
+                    appletId: appletId,
+                    transitionStyle: style,
+                    reLaunchMode: mode,
+                    startParams: startParams);
                   Mop.instance.startApplet(request);
+
                   // Mop.instance.qrcodeOpenApplet('https://api.finclip.com/api/v1/mop/runtime/applet/-f-MGYzN2Q1YTYzMmI2MWIyZg--');
 
                 }),
-                _buildAppletItem(appletId, "finishRunningApplet", () {
+                _buildAppletItem(appletId, "finish", () {
                   Mop.instance.finishRunningApplet(appletId, true);
                 }),
-                _buildAppletItem(appletId, "removeUsedApplet", () {
+                _buildAppletItem(appletId, "remove", () {
                   Mop.instance.removeUsedApplet(appletId);
+                }),
+                _buildAppletItem(appletId, "finishAll", () {
+                  Mop.instance.clearApplets();
                 }),
               ],
             ),
@@ -191,15 +216,29 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('凡泰极客小程序 Flutter 插件'),
+          actions: <Widget>[
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: Icon(Icons.more_horiz),
+                  tooltip: 'More',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TestPage()),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
         ),
-        body: Column(
+        body: ListView(
           children: <Widget>[
-            // https://api.finclip.com/api/v2/mop/runtime/applet/organ/-f-MWMzMTFiYTkxMzYyYjBkNQ--
-            // 64620d7cd21d34000194a9d5
-            _buildAppletWidget("64620d7cd21d34000194a9d5", "题库"),
-            // _buildAppletWidget("5f72e3559a6a7900019b5baa", "官方小程序"),
-            // _buildAppletWidget("5f17f457297b540001e06ebb", "api测试小程序"),
-            // _buildAppletWidget("61386f6484dd160001d3e1ab", "测试小程序"),
+            _buildAppletWidget("5facb3a52dcbff00017469bd", "画图小程序", 0, {'query':'ramdom='+context.hashCode.toString()}),
+            _buildAppletWidget("5f72e3559a6a7900019b5baa", "官方小程序", 1, {'query':'key=value'}),
+            _buildAppletWidget("5f17f457297b540001e06ebb", "api测试小程序", 2, null),
+            _buildAppletWidget("61386f6484dd160001d3e1ab", "测试小程序", 3, {'query':'ramdom='+context.hashCode.toString()}),
             
           ],
         ),
@@ -217,7 +256,7 @@ class MyAppletHandler extends AppletHandler {
   @override
   bool customCapsuleMoreButtonClick(String appId) {
     print("customCapsuleMoreButtonClick---");
-    toAppMessageChannel.invokeMethod("showCustomMoreView", {"appId": appId});
+    // toAppMessageChannel.invokeMethod("showCustomMoreView", {"appId": appId});
     return false;
   }
 
@@ -228,16 +267,16 @@ class MyAppletHandler extends AppletHandler {
 
   @override
   Future<List<CustomMenu>> getCustomMenus(String appId) {
-    CustomMenu menu1 = CustomMenu('WXTest', 'https://img1.baidu.com/it/u=2878938773,1765835171&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500', '百度图标', 'common');
+    CustomMenu menu1 = CustomMenu('menu100', 'https://img1.baidu.com/it/u=2878938773,1765835171&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500', '百度图标', 'common');
     menu1.darkImage = 'https://img95.699pic.com/xsj/14/46/mh.jpg%21/fw/700/watermark/url/L3hzai93YXRlcl9kZXRhaWwyLnBuZw/align/southeast';
     
-    CustomMenu menu2 = CustomMenu('CustomMenu2', 'minipro_list_collect', '工程图标', 'common');
+    CustomMenu menu2 = CustomMenu('menu101', 'minipro_list_collect', '工程图标', 'common');
     menu2.darkImage = 'minipro_list_service';
 
     List<CustomMenu> customMenus = [
       menu1,
       menu2,
-      CustomMenu('MyFriends', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpvugSNLs9R7iopz_noeotAelvgzYj-74iCg&usqp=CAU', '谷歌图标', 'common'),
+      CustomMenu('ShareDingDing', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpvugSNLs9R7iopz_noeotAelvgzYj-74iCg&usqp=CAU', '谷歌图标', 'common'),
       // CustomMenu('WXShareAPPFriends', 'https://img1.baidu.com/it/u=2878938773,1765835171&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500', '微信好朋友', 'common'),
       // CustomMenu('WXShareAPPMoments', 'https://img2.baidu.com/it/u=3113705544,436318069&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500', '微信朋友圈', 'common'),
 
@@ -281,6 +320,7 @@ class MyAppletHandler extends AppletHandler {
 
   @override
   Future<void> onCustomMenuClick(String appId, String path, String menuId, String appInfo) {
+    print('自定义菜单的点击 appId:$appId path: $path menuId:$menuId');
     // TODO: implement onCustomMenuClick
     throw UnimplementedError();
   }

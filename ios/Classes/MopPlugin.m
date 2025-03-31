@@ -29,7 +29,9 @@
 }
 @end
 
-
+@interface MopPlugin()
+@property (nonatomic, assign) NSInteger checkSDKInitTimes;
+@end
 @implementation MopPlugin
 
 static MopPlugin *_instance;
@@ -64,6 +66,7 @@ static MopPlugin *_instance;
               binaryMessenger:[registrar messenger]];
     [registrar addMethodCallDelegate:_instance channel:appletShareChannel];
     _instance.shareAppletMethodChannel = appletShareChannel;
+    
 
 }
 
@@ -141,6 +144,7 @@ static MopPlugin *_instance;
       request.command = call.method;
       request.param = (NSDictionary*)call.arguments;
       MOPBaseApi* api = [MOPApiConverter apiWithRequest: request];
+      NSLog(@"method:%@, param:%@", request.command, request.param);
       if (api) {
           [api setupApiWithSuccess:^(NSDictionary<NSString *,id> * _Nonnull data) {
               result(@{@"retMsg":@"ok",@"success":@(YES),@"data": data ? : @{}});
@@ -167,14 +171,18 @@ static MopPlugin *_instance;
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options
 {
     NSString *string = url.absoluteString;
+    self.checkSDKInitTimes = 0;
     if ([string containsString:@"finclipWebview/url="]) {
         if (![FATClient sharedClient].inited) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                FlutterMethodChannel *channel = [[MopPlugin instance] shareMethodChannel];
-                [channel invokeMethod:@"shareApi:openURL" arguments:@{@"url":string} result:^(id  _Nullable result) {
+            [self checkSDKInitStatusWithComplete:^(BOOL result) {
+                if (result) {
+                    FlutterMethodChannel *channel = [[MopPlugin instance] shareMethodChannel];
+                    [channel invokeMethod:@"shareApi:openURL" arguments:@{@"url":string} result:^(id  _Nullable result) {
 
-                }];
-            });
+                    }];
+                }
+            }];
+            
         }
         else {
             FlutterMethodChannel *channel = [[MopPlugin instance] shareMethodChannel];
@@ -187,9 +195,11 @@ static MopPlugin *_instance;
     }
     
     if (![FATClient sharedClient].inited) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[FATClient sharedClient] handleOpenURL:url];
-        });
+        [self checkSDKInitStatusWithComplete:^(BOOL result) {
+            if (YES) {
+                [[FATClient sharedClient] handleOpenURL:url];
+            }
+        }];
     }
     return [[FATClient sharedClient] handleOpenURL:url];
 }
@@ -204,6 +214,23 @@ static MopPlugin *_instance;
         return [[FATClient sharedClient] handleOpenUniversalLinkURL:url];
     }
     return YES;
+}
+
+- (void)checkSDKInitStatusWithComplete:(void(^)(BOOL result))complete {
+    if (self.checkSDKInitTimes >=20) {
+        complete(NO);
+        return;
+    }
+    if ([FATClient sharedClient].inited) {
+        complete(YES);
+        return;
+    } else {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.checkSDKInitTimes +=1;
+            [self checkSDKInitStatusWithComplete:complete];
+        });
+    }
+    
 }
 
 
